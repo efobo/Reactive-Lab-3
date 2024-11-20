@@ -6,6 +6,7 @@ import generators.ManufacturerGenerator;
 import generators.ProductGenerator;
 import org.openjdk.jmh.annotations.*;
 import statistics.Calculation;
+import statistics.ReactiveStatistics;
 
 import java.util.List;
 import java.util.Map;
@@ -19,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class BenchmarkCalculation {
-    @Param({"5000", "25000", "50000"})
+    @Param({"500", "2000"})
     private int productCount;
 
     private List<Manufacturer> manufacturers;
@@ -52,73 +53,85 @@ public class BenchmarkCalculation {
         return Calculation.avgRatingWithSeqCollector(products, manufacturers, 0);
     }
 
-    @Benchmark()
-    @Group("_1_SequentialStreamNoDelay")
-    public Map<Manufacturer, Double> seqPipelineNoDelay() {
-        return Calculation.avgRatingWithSeqPipeline(products, 0);
+//    @Benchmark()
+//    @Group("_1_SequentialStreamNoDelay")
+//    public Map<Manufacturer, Double> seqPipelineNoDelay() {
+//        return Calculation.avgRatingWithSeqPipeline(products, 0);
+//    }
+//
+//    @Benchmark
+//    @Group("_1_SequentialStreamWithDelay")
+//    public Map<Manufacturer, Double> seqCollectorWithDelay() {
+//        return Calculation.avgRatingWithSeqCollector(products, manufacturers, 1);
+//    }
+//
+//    @Benchmark
+//    @Group("_1_SequentialStreamWithDelay")
+//    public Map<Manufacturer, Double> seqPipelineWithDelay() {
+//        return Calculation.avgRatingWithSeqPipeline(products, 1);
+//    }
+//
+//    // ПАРАЛЛЕЛЬНЫЕ СТРИМЫ
+//
+//    @Benchmark
+//    @Group("_2_ParallelStreamNoDelay")
+//    public Map<Manufacturer, Double> parCollectorNoDelay() {
+//        return Calculation.avgRatingWithParCollector(products, manufacturers, 0);
+//    }
+//
+//    @Benchmark
+//    @Group("_2_ParallelStreamNoDelay")
+//    public Map<Manufacturer, Double> parPipelineNoDelay() {
+//        return Calculation.avgRatingWithParPipeline(products, 0);
+//    }
+//
+//    @Benchmark
+//    @Group("_2_ParallelStreamWithDelay")
+//    public Map<Manufacturer, Double> parCollectorWithDelay() {
+//        return Calculation.avgRatingWithParCollector(products, manufacturers, 1);
+//    }
+//
+//    @Benchmark
+//    @Group("_2_ParallelStreamWithDelay")
+//    public Map<Manufacturer, Double> parPipelineWithDelay() {
+//        return Calculation.avgRatingWithParPipeline(products, 1);
+//    }
+//
+//    // ОПТИМИЗИРОВАННЫЕ ПАРАЛЛЕЛЬНЫЕ СТРИМЫ (СО СПЛИТЕРАТОРОМ)
+//
+//    @Benchmark
+//    @Group("_3_OptimizedParallelStreamNoDelay")
+//    public Map<Manufacturer, Double> optParCollectorNoDelay() {
+//        return Calculation.avgRatingWithOptParCollector(products, manufacturers, 0);
+//    }
+//
+//    @Benchmark
+//    @Group("_3_OptimizedParallelStreamNoDelay")
+//    public Map<Manufacturer, Double> optParPipelineNoDelay() {
+//        return Calculation.avgRatingWithParPipeline(products, 0);
+//    }
+//
+//    @Benchmark
+//    @Group("_3_OptimizedParallelStreamWithDelay")
+//    public Map<Manufacturer, Double> optParCollectorWithDelay() {
+//        return Calculation.avgRatingWithOptParCollector(products, manufacturers, 1);
+//    }
+//
+//    @Benchmark
+//    @Group("_3_OptimizedParallelStreamWithDelay")
+//    public Map<Manufacturer, Double> optParPipelineWithDelay() {
+//        return Calculation.avgRatingWithOptParPipeline(products, 1);
+//    }
+
+    @Benchmark
+    @Group("_3_Reactive_Statistics")
+    public Map<Manufacturer, Double> rectiveStatistics500() throws InterruptedException {
+        return ReactiveStatistics.calculateStatisticsAsync(500, 10);
     }
 
     @Benchmark
-    @Group("_1_SequentialStreamWithDelay")
-    public Map<Manufacturer, Double> seqCollectorWithDelay() {
-        return Calculation.avgRatingWithSeqCollector(products, manufacturers, 1);
-    }
-
-    @Benchmark
-    @Group("_1_SequentialStreamWithDelay")
-    public Map<Manufacturer, Double> seqPipelineWithDelay() {
-        return Calculation.avgRatingWithSeqPipeline(products, 1);
-    }
-
-    // ПАРАЛЛЕЛЬНЫЕ СТРИМЫ
-
-    @Benchmark
-    @Group("_2_ParallelStreamNoDelay")
-    public Map<Manufacturer, Double> parCollectorNoDelay() {
-        return Calculation.avgRatingWithParCollector(products, manufacturers, 0);
-    }
-
-    @Benchmark
-    @Group("_2_ParallelStreamNoDelay")
-    public Map<Manufacturer, Double> parPipelineNoDelay() {
-        return Calculation.avgRatingWithParPipeline(products, 0);
-    }
-
-    @Benchmark
-    @Group("_2_ParallelStreamWithDelay")
-    public Map<Manufacturer, Double> parCollectorWithDelay() {
-        return Calculation.avgRatingWithParCollector(products, manufacturers, 1);
-    }
-
-    @Benchmark
-    @Group("_2_ParallelStreamWithDelay")
-    public Map<Manufacturer, Double> parPipelineWithDelay() {
-        return Calculation.avgRatingWithParPipeline(products, 1);
-    }
-
-    // ОПТИМИЗИРОВАННЫЕ ПАРАЛЛЕЛЬНЫЕ СТРИМЫ (СО СПЛИТЕРАТОРОМ)
-
-    @Benchmark
-    @Group("_3_OptimizedParallelStreamNoDelay")
-    public Map<Manufacturer, Double> optParCollectorNoDelay() {
-        return Calculation.avgRatingWithOptParCollector(products, manufacturers, 0);
-    }
-
-    @Benchmark
-    @Group("_3_OptimizedParallelStreamNoDelay")
-    public Map<Manufacturer, Double> optParPipelineNoDelay() {
-        return Calculation.avgRatingWithParPipeline(products, 0);
-    }
-
-    @Benchmark
-    @Group("_3_OptimizedParallelStreamWithDelay")
-    public Map<Manufacturer, Double> optParCollectorWithDelay() {
-        return Calculation.avgRatingWithOptParCollector(products, manufacturers, 1);
-    }
-
-    @Benchmark
-    @Group("_3_OptimizedParallelStreamWithDelay")
-    public Map<Manufacturer, Double> optParPipelineWithDelay() {
-        return Calculation.avgRatingWithOptParPipeline(products, 1);
+    @Group("_3_Reactive_Statistics")
+    public Map<Manufacturer, Double> rectiveStatistics2000() throws InterruptedException {
+        return ReactiveStatistics.calculateStatisticsAsync(2000, 10);
     }
 }

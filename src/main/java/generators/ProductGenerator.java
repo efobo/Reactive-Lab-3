@@ -14,7 +14,7 @@ public class ProductGenerator extends AbstractGenerator<Product> {
     private final int reviewCount;
 
     @Override
-    protected Product generate() {
+    public Product generate() {
         LocalDate releaseDate = faker.timeAndDate().birthday(0, 5);
         ReviewGenerator reviewGenerator = new ReviewGenerator(releaseDate);
 

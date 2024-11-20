@@ -4,7 +4,7 @@ import entities.Manufacturer;
 
 public class ManufacturerGenerator extends AbstractGenerator<Manufacturer> {
     @Override
-    protected Manufacturer generate() {
+    public Manufacturer generate() {
         return new Manufacturer(
                 id++,
                 faker.company().name(),
