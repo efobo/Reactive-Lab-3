@@ -9,7 +9,7 @@ public abstract class AbstractGenerator<T> {
     protected int id = 1;
     protected final Faker faker = new Faker();
 
-    protected abstract T generate();
+    public abstract T generate();
 
     public List<T> generateList(int count) {
         List<T> list = new ArrayList<>();

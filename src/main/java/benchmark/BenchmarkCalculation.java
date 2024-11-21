@@ -6,6 +6,7 @@ import generators.ManufacturerGenerator;
 import generators.ProductGenerator;
 import org.openjdk.jmh.annotations.*;
 import statistics.Calculation;
+import statistics.ReactiveStatistics;
 
 import java.util.List;
 import java.util.Map;
@@ -60,4 +61,8 @@ public class BenchmarkCalculation {
         return Calculation.avgRatingWithRxObservable(products, 1);
     }
 
+    @Benchmark
+    public Map<Manufacturer, Double> rectiveStatistics() throws InterruptedException {
+        return ReactiveStatistics.calculateStatisticsAsync(products, 100);
+    }
 }

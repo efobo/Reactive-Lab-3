@@ -13,7 +13,7 @@ public class ReviewGenerator extends AbstractGenerator<Review> {
     private final LocalDate releaseDate;
 
     @Override
-    protected Review generate() {
+    public Review generate() {
         return new Review(
                 id++,
                 faker.timeAndDate()
