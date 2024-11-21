@@ -12,15 +12,14 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Fork(1)
-//@Threads(8)
+@Threads(8)
 @State(Scope.Benchmark)
 @Warmup(iterations = 0)
-@Measurement(iterations = 1, time = 1)
+@Measurement(iterations = 3, time = 1)
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class BenchmarkCalculation {
-    //@Param({"500", "2000"})
-    @Param({"1"})
+    @Param({"500", "2000", "100000"})
     private int productCount;
 
     private List<Manufacturer> manufacturers;
@@ -45,17 +44,20 @@ public class BenchmarkCalculation {
         System.out.println("Done.");
     }
 
-    //@Benchmark
-    //@Group("_2_ParallelStreamWithDelay")
-    public Map<Manufacturer, Double> parPipelineWithDelay() {
+    @Benchmark
+    public Map<Manufacturer, Double> parPipeline() {
+        if (productCount == 100000) {
+            return null;
+        }
         return Calculation.avgRatingWithParPipeline(products, 1);
     }
 
     @Benchmark
-    //@Group("_2_ParallelStreamWithDelay")
-    public Map<Manufacturer, Double> rxWithDelay() {
-        Calculation.avgRatingWithRX(products, 1);
-        return null;
+    public Map<Manufacturer, Double> rxObservable() {
+        if (productCount == 100000) {
+            return null;
+        }
+        return Calculation.avgRatingWithRxObservable(products, 1);
     }
 
 }

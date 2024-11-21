@@ -23,7 +23,18 @@ public class Calculation {
                 ));
     }
 
-    public static Map<Manufacturer, Double> avgRatingWithRX(List<Product> products, long delay) {
+    public static Map<Manufacturer, Double> avgRatingWithRxObservable(List<Product> products, long delay) {
+        return Observable.fromIterable(products)
+                .observeOn(Schedulers.computation())
+                .map(p -> Map.entry(p.getManufacturer(), Observable.fromIterable(p.getReviewsWithDelay(delay)).map(Review::getRating)))
+                .groupBy(Map.Entry::getKey)
+                .flatMap(g -> MathObservable.averageDouble(g.flatMap(Map.Entry::getValue)).map(avg -> Map.entry(g.getKey(), avg)))
+                .toMap(Map.Entry::getKey, Map.Entry::getValue)
+                .blockingGet();
+    }
+
+    /*
+    public static Map<Manufacturer, Double> avgRatingWithRxObservable(List<Product> products, long delay) {
         return Observable.fromIterable(products)
                 .observeOn(Schedulers.computation())
                 .groupBy(Product::getManufacturer)
@@ -34,7 +45,7 @@ public class Calculation {
                 )
                 .toMap(Map.Entry::getKey, Map.Entry::getValue)
                 .blockingGet();
-    }
+    }*/
 
     public static void printResult(Map<Manufacturer, Double> result) {
         for (Manufacturer manufacturer : result.keySet()) {
