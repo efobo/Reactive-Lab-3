@@ -75,7 +75,6 @@ public class ReactiveStatistics {
 
             processed++;
             if (processed % batchSize == 0) {
-                System.out.printf("Processed %d products so far.\n", processed);
                 subscription.request(batchSize);
             }
         }
@@ -88,7 +87,6 @@ public class ReactiveStatistics {
 
         @Override
         public void onComplete() {
-            System.out.println("Processing complete.");
             latch.countDown();
         }
     }
