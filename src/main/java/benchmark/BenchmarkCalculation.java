@@ -6,7 +6,6 @@ import generators.ManufacturerGenerator;
 import generators.ProductGenerator;
 import org.openjdk.jmh.annotations.*;
 import statistics.Calculation;
-import statistics.ReactiveStatistics;
 
 import java.util.List;
 import java.util.Map;
@@ -22,8 +21,6 @@ import java.util.concurrent.TimeUnit;
 public class BenchmarkCalculation {
     @Param({"500", "2000", "100000"})
     private int productCount;
-
-    private List<Manufacturer> manufacturers;
     private List<Product> products;
 
     @Setup(Level.Trial) // Вызовется в начале всего теста, всего тестов 3 (поскольку 3 разных productCount)
@@ -34,7 +31,7 @@ public class BenchmarkCalculation {
         System.out.printf("\nGenerating %d manufacturers... ", manufacturerCount);
 
         ManufacturerGenerator manufacturerGenerator = new ManufacturerGenerator();
-        manufacturers = manufacturerGenerator.generateList(manufacturerCount);
+        List<Manufacturer> manufacturers = manufacturerGenerator.generateList(manufacturerCount);
 
         System.out.println("Done.");
         System.out.printf("Generating %d products with %d reviews... ", productCount, reviewCount);
@@ -62,7 +59,7 @@ public class BenchmarkCalculation {
     }
 
     @Benchmark
-    public Map<Manufacturer, Double> rectiveStatistics() throws InterruptedException {
-        return ReactiveStatistics.calculateStatisticsAsync(products, 100);
+    public Map<Manufacturer, Double> rxFlowable() throws InterruptedException {
+        return Calculation.avgRatingWithRxFlowable(products, 100);
     }
 }
