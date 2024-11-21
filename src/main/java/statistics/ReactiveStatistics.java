@@ -29,15 +29,14 @@ public class ReactiveStatistics {
         }, BackpressureStrategy.BUFFER);
 
         Map<Manufacturer, StatisticsAccumulator> statistics = new ConcurrentHashMap<>();
-        //CountDownLatch latch = new CountDownLatch(1);
 
         productFlowable
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
                 .subscribe(new RegulatedStatisticsSubscriber(statistics, batchSize));
-                //.subscribe(new RegulatedStatisticsSubscriber(statistics, batchSize, latch));
 
-        //latch.await();
+
+
         return finalizeStatistics(statistics);
     }
 
@@ -52,14 +51,12 @@ public class ReactiveStatistics {
     static class RegulatedStatisticsSubscriber implements Subscriber<Product> {
         private final Map<Manufacturer, StatisticsAccumulator> statistics;
         private final int batchSize;
-        //private final CountDownLatch latch;
         private Subscription subscription;
         private int processed = 0;
 
         public RegulatedStatisticsSubscriber(Map<Manufacturer, StatisticsAccumulator> statistics, int batchSize) {
             this.statistics = statistics;
             this.batchSize = batchSize;
-            //this.latch = latch;
         }
 
         @Override
@@ -83,13 +80,10 @@ public class ReactiveStatistics {
         @Override
         public void onError(Throwable t) {
             t.printStackTrace();
-            //latch.countDown();
         }
 
         @Override
-        public void onComplete() {
-            //latch.countDown();
-        }
+        public void onComplete() {}
     }
 
     static class StatisticsAccumulator {
