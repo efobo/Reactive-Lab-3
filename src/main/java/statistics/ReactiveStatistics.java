@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 
 public class ReactiveStatistics {
 
-    public static Map<Manufacturer, Double> calculateStatisticsAsync(List<Product> products) throws InterruptedException {
+    public static Map<Manufacturer, Double> calculateStatisticsAsync(List<Product> products, int batchSize) throws InterruptedException {
         Flowable<Product> productFlowable = Flowable.create(emitter -> {
             for (Product product : products) {
                 emitter.onNext(product);
@@ -29,12 +29,12 @@ public class ReactiveStatistics {
         }, BackpressureStrategy.BUFFER);
 
         Map<Manufacturer, StatisticsAccumulator> statistics = new ConcurrentHashMap<>();
-        CountDownLatch latch = new CountDownLatch(1); // Для ожидания завершения обработки
+        CountDownLatch latch = new CountDownLatch(1);
 
         productFlowable
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.computation())
-                .subscribe(new RegulatedStatisticsSubscriber(statistics, 100, latch)); // Указываем batchSize и latch
+                .subscribe(new RegulatedStatisticsSubscriber(statistics, batchSize, latch));
 
         latch.await();
         return finalizeStatistics(statistics);
