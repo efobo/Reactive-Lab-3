@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 @BenchmarkMode(Mode.AverageTime)
 @OutputTimeUnit(TimeUnit.MILLISECONDS)
 public class BenchmarkCalculation {
-    @Param({"500", "2000"})
+    @Param({"500", "2000", "10000"})
     private int productCount;
 
     private List<Manufacturer> manufacturers;
@@ -44,14 +44,14 @@ public class BenchmarkCalculation {
 
         System.out.println("Done.");
     }
-
-    // ПОСЛЕДОВАТЕЛЬНЫЕ СТРИМЫ
-
-    @Benchmark
-    @Group("_1_SequentialStreamNoDelay")
-    public Map<Manufacturer, Double> seqCollectorNoDelay() {
-        return Calculation.avgRatingWithSeqCollector(products, manufacturers, 0);
-    }
+//
+//    // ПОСЛЕДОВАТЕЛЬНЫЕ СТРИМЫ
+//
+//    @Benchmark
+//    @Group("_1_SequentialStreamNoDelay")
+//    public Map<Manufacturer, Double> seqCollectorNoDelay() {
+//        return Calculation.avgRatingWithSeqCollector(products, manufacturers, 0);
+//    }
 
 //    @Benchmark()
 //    @Group("_1_SequentialStreamNoDelay")
@@ -125,13 +125,8 @@ public class BenchmarkCalculation {
 
     @Benchmark
     @Group("_3_Reactive_Statistics")
-    public Map<Manufacturer, Double> rectiveStatistics500() throws InterruptedException {
-        return ReactiveStatistics.calculateStatisticsAsync(500, 10);
+    public Map<Manufacturer, Double> rectiveStatistics() throws InterruptedException {
+        return ReactiveStatistics.calculateStatisticsAsync(products, 100);
     }
 
-    @Benchmark
-    @Group("_3_Reactive_Statistics")
-    public Map<Manufacturer, Double> rectiveStatistics2000() throws InterruptedException {
-        return ReactiveStatistics.calculateStatisticsAsync(2000, 10);
-    }
 }
