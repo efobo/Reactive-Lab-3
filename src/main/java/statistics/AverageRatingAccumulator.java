@@ -1,12 +1,18 @@
 package statistics;
 
+import entities.Review;
+
+import java.util.List;
+
 public class AverageRatingAccumulator {
     private int totalRating = 0;
     private int reviewCount = 0;
 
-    void addRating(int rating) {
-        totalRating += rating;
-        reviewCount++;
+    public void addReviews(List<Review> reviews) {
+        for (Review review : reviews) {
+            totalRating += review.getRating();
+            reviewCount++;
+        }
     }
 
     AverageRatingAccumulator combine(AverageRatingAccumulator other) {

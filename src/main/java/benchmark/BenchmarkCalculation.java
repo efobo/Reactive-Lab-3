@@ -59,7 +59,7 @@ public class BenchmarkCalculation {
     }
 
     @Benchmark
-    public Map<Manufacturer, Double> rxFlowable() throws InterruptedException {
+    public Map<Manufacturer, Double> rxFlowable() {
         return Calculation.avgRatingWithRxFlowable(products, 100);
     }
 }

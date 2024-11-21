@@ -4,14 +4,13 @@ import entities.Manufacturer;
 import entities.Product;
 import entities.Review;
 import hu.akarnokd.rxjava3.math.MathObservable;
-import io.reactivex.rxjava3.core.BackpressureStrategy;
 import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Observable;
 import io.reactivex.rxjava3.schedulers.Schedulers;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 public class Calculation {
@@ -36,26 +35,13 @@ public class Calculation {
                 .blockingGet();
     }
 
-    public static Map<Manufacturer, Double> avgRatingWithRxFlowable(List<Product> products, int batchSize) throws InterruptedException {
-        Flowable<Product> productFlowable = Flowable.create(emitter -> {
-            for (Product product : products) {
-                emitter.onNext(product);
-            }
-            emitter.onComplete();
-        }, BackpressureStrategy.BUFFER);
-
-        Map<Manufacturer, AverageRatingSubscriber.StatisticsAccumulator> statistics = new ConcurrentHashMap<>();
-
-        productFlowable
-                .subscribeOn(Schedulers.io())
+    public static Map<Manufacturer, Double> avgRatingWithRxFlowable(List<Product> products, int batchSize) {
+        Map<Manufacturer, Double> result = new HashMap<>();
+        Flowable.fromIterable(products)
+                .onBackpressureBuffer()
                 .observeOn(Schedulers.computation())
-                .subscribe(new AverageRatingSubscriber(statistics, batchSize));
-
-        return statistics.entrySet().stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey,
-                        entry -> entry.getValue().getAverageRating()
-                ));
+                .blockingSubscribe(new AverageRatingSubscriber(result, batchSize));
+        return result;
     }
 
     /*
